@@ -16,7 +16,7 @@ import static io.restassured.RestAssured.given;
 
 public class RequestAPI {
 
-    public static RequestSpecification requestSpec = new RequestSpecBuilder()
+    private static RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
             .setPort(9999)
             .setAccept(ContentType.JSON)
@@ -34,7 +34,7 @@ public class RequestAPI {
                 .statusCode(200); // код 200 OK
     }
 
-    public static String getVerificationCode () throws SQLException {
+    public static String getVerificationCode() {
         Object code = null;
         val codeSQL = "SELECT code FROM auth_codes WHERE created = (SELECT max(created) FROM auth_codes);";
         val runner = new QueryRunner();
@@ -46,10 +46,13 @@ public class RequestAPI {
         ) {
             code = runner.query(conn, codeSQL, new ScalarHandler<>());
         }
+        catch (SQLException exception) {
+            exception.printStackTrace();
+        }
         return (String) code;
     }
 
-    public static String getToken(RequestSpecification requestSpec) throws SQLException {
+    public static String getToken() throws SQLException {
         String token = given() // "дано"
                 .spec(requestSpec) // указываем, какую спецификацию используем
                 .body(DataHelper.getVerificationInfoFor(DataHelper.getAuthInfo(),getVerificationCode())) // передаём в теле объект, который будет преобразован в JSON
@@ -63,7 +66,7 @@ public class RequestAPI {
     }
 
 
-    public static int getFirstBalanceCard(RequestSpecification requestSpec, String token) {
+    public static int getFirstBalanceCard(String token) {
         int firstBalance;
         Card[] cards =
                 given() // "дано"
@@ -78,7 +81,7 @@ public class RequestAPI {
         return firstBalance = Integer.parseInt(cards[0].getBalance());
     }
 
-    public static int getSecondBalanceCard(RequestSpecification requestSpec, String token) {
+    public static int getSecondBalanceCard(String token) {
         int secondBalance;
         Card[] cards =
                 given() // "дано"
@@ -93,7 +96,7 @@ public class RequestAPI {
         return secondBalance = Integer.parseInt(cards[1].getBalance());
     }
 
-    public static void makeTransferFromSecondToFirst(RequestSpecification requestSpec, String token, int sum) {
+    public static void makeTransferFromSecondToFirst(String token, int sum) {
         given()
                 .spec(requestSpec)
                 .header("Authorization", "Bearer " + token)

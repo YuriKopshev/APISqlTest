@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import ru.netology.data.RequestAPI;
 import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static ru.netology.data.RequestAPI.requestSpec;
 
 public class APITest {
     int begBalance1;
@@ -15,12 +14,12 @@ public class APITest {
     @Test
     void shouldMakeTransfer() throws SQLException {
         RequestAPI.getRequest();
-        String token = RequestAPI.getToken(requestSpec);
-        begBalance1 = RequestAPI.getFirstBalanceCard(requestSpec,token);
-        begBalance2 = RequestAPI.getSecondBalanceCard(requestSpec, token);
-        RequestAPI.makeTransferFromSecondToFirst(requestSpec, token, sum);
-        int endBalance1 = RequestAPI.getFirstBalanceCard(requestSpec, token);
-        int endBalance2 = RequestAPI.getSecondBalanceCard(requestSpec, token);
+        String token = RequestAPI.getToken();
+        begBalance1 = RequestAPI.getFirstBalanceCard(token);
+        begBalance2 = RequestAPI.getSecondBalanceCard(token);
+        RequestAPI.makeTransferFromSecondToFirst(token, sum);
+        int endBalance1 = RequestAPI.getFirstBalanceCard(token);
+        int endBalance2 = RequestAPI.getSecondBalanceCard(token);
         assertEquals(begBalance1 - sum, endBalance1);
         assertEquals(begBalance2 + sum, endBalance2);
     }
